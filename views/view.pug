@@ -1,24 +1,27 @@
 extends layout
 
 block content
-    h1= title
+    .box
+        h1= title
 
-    if user
-        p
-            strong ID: 
-            | #{user.ID}
+        if user
+            p
+                strong ID: 
+                | #{user.ID}
 
-        p
-            strong Name: 
-            | #{user.Name}
+            p
+                strong Name: 
+                | #{user.Name}
 
-        p
-            strong Age: 
-            | #{user.Age}
-        
-        buttons
-            a(href="/user/edit/" + user.ID) Edit
-            br
-            a(href="/user/delete/" + user.ID) Delete
-    else
-        p User not found
+            p
+                strong Age: 
+                | #{user.Age}
+
+            .modifyButtons
+                buttons 
+                    a(href="/user/edit/" + user.ID) Edit
+                    br
+                    .deleteButton
+                        a(href="/user/delete/" + user.ID) Delete
+        else
+            p User not found

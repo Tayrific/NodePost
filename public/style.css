@@ -1,0 +1,124 @@
+html,
+body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #cfa2c2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+main {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.box {
+    position: relative;
+    height: 200px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #ece5ec;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.box h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+}
+
+.box form {
+    margin-bottom: 0;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Adjust spacing between form groups */
+}
+
+.form-group label {
+    width: 80px; /* Fixed width for labels */
+    text-align: right; /* Align labels to the right */
+    margin-right: 10px; /* Add space between label and input */
+}
+
+.form-group input, input[type=text] {
+    
+    height: 30px; /* Adjust input height */
+    padding: 5px; /* Add padding inside input */
+    border: 1px solid #ccc; /* Example border for input */
+    border-radius: 4px;
+}
+
+select#dropdownSelect{
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.modifyButtons {
+    position: absolute;
+    
+    top: 10px;
+    right: 10px;
+}
+
+input[type=submit],
+button[type=button] {
+    position: absolute;
+    top: 180px;
+    right: 20px;
+
+    height: 40px;
+    width: 80px;
+
+    background-color: #04AA6D;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modifyButtons a {
+    height: 25px;
+    width: 80px;
+    background-color: #0074c2;
+    color: white;
+    padding: 5px 5px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+.deleteButton input, .deleteButton a {
+    background-color: #a50000;
+}
+
+.modifyButtons input {
+    background-color: #0074c2;
+}
+
+
+/* Footer positioning */
+footer {
+    margin-top: auto;
+    /* Push footer to the bottom */
+    text-align: center;
+    /* Center align text */
+    padding: 5px;
+    border-top: 1px solid #ccc;
+    /* Example top border for footer */
+}

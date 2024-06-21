@@ -6,20 +6,26 @@ var sql = require("mssql");
 const path = require("path");
 var form = require("multer");
 const { json } = require("body-parser");
+const methodOverride = require("method-override");
 
-var app = express();
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "pug");
-
-const ip = "127.0.0.1";
-const port = process.env.PORT || 4040;
 const studentRouter = express.Router();
 
-// Body Parser Middleware
+const app = express();
+const port = process.env.PORT || 4040;
+const ip = "127.0.0.1";
+
+// Middleware setup
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-//var urlencodedParser = bodyParser.urlencoded({ extended: false });
-app.use(bodyParser.text({ type: "text/html" }));
+
+// Method override middleware
+app.use(methodOverride("_method")); // Ensure this line is present
+
+// View engine setup
+app.use(express.static(path.join(__dirname, "public")));
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
 
 app.use(
   cors({
@@ -134,57 +140,122 @@ studentRouter.route("/user/:id").get((req, res) => {
 });
 
 // Edit user page
-studentRouter.route("/user/edit/:id").get((req, res) => {
-  var userId = req.params.id;
-  var query = "SELECT * FROM Studentinfo WHERE ID = @id";
-  sql.connect(dbConfig, function (err) {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Database connection error");
-    }
-    var request = new sql.Request();
-    request.input("id", sql.VarChar, userId);
-    request.query(query, function (err, result) {
+studentRouter.route("/user/edit/:id")
+  .get((req, res) => {
+    var userId = req.params.id;
+    var query = "SELECT * FROM Studentinfo WHERE ID = @id";
+    sql.connect(dbConfig, function (err) {
       if (err) {
         console.error(err);
-        return res.status(500).send("Query execution error");
+        return res.status(500).send("Database connection error");
       }
-      if (result.recordset.length > 0) {
-        res.render("edit", { title: "Edit User", user: result.recordset[0] });
-      } else {
-        res.status(404).send("User not found");
+      var request = new sql.Request();
+      request.input("id", sql.VarChar, userId);
+      request.query(query, function (err, result) {
+        if (err) {
+          console.error(err);
+          return res.status(500).send("Query execution error");
+        }
+        if (result.recordset.length > 0) {
+          res.render("edit", {
+            title: "Edit User",
+            user: result.recordset[0],
+          });
+        } else {
+          res.status(404).send("User not found");
+        }
+      });
+    });
+  })
+  .put((req, res) => {
+    const userId = req.params.id;
+    const name = req.body.name;
+    const age = req.body.age;
+
+    // Validate inputs
+    if (!name || !age || !userId) {
+      return res.status(400).send("Name, Age, and User ID are required");
+    }
+    var query = "UPDATE Studentinfo SET Name = @name, Age = @age WHERE ID = @id";
+
+    sql.connect(dbConfig, function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Database connection error");
       }
+
+      var request = new sql.Request();
+      request.input("name", sql.VarChar, name);
+      request.input("age", sql.VarChar, age);
+      request.input("id", sql.VarChar, userId);
+
+      request.query(query, function (err, result) {
+        if (err) {
+          console.error(err);
+        }
+
+        res.send("User updated successfully");
+      });
     });
   });
-});
 
 // Delete user page
-studentRouter.route("/user/delete/:id").get((req, res) => {
-  var userId = req.params.id;
-  var query = "SELECT * FROM Studentinfo WHERE ID = @id";
-  sql.connect(dbConfig, function (err) {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Database connection error");
-    }
-    var request = new sql.Request();
-    request.input("id", sql.VarChar, userId);
-    request.query(query, function (err, result) {
+studentRouter.route("/user/delete/:id")
+  .get((req, res) => {
+    const userId = req.params.id;
+    var query = "SELECT * FROM Studentinfo WHERE ID = @id";
+    sql.connect(dbConfig, function (err) {
       if (err) {
         console.error(err);
-        return res.status(500).send("Query execution error");
+        return res.status(500).send("Database connection error");
       }
-      if (result.recordset.length > 0) {
-        res.render("delete", {
-          title: "Delete User",
-          user: result.recordset[0],
-        });
-      } else {
-        res.status(404).send("User not found");
+      var request = new sql.Request();
+      request.input("id", sql.VarChar, userId);
+      request.query(query, function (err, result) {
+        if (err) {
+          console.error(err);
+        }
+        if (result.recordset.length > 0) {
+          res.render("delete", {
+            title: "Delete User",
+            user: result.recordset[0],
+          });
+        } else {
+          res.status(404).send("User not found");
+        }
+      });
+    });
+  })
+  .delete((req, res) => {
+    var userId = req.params.id;
+
+    // Validate input
+    if (!userId) {
+      return res.status(400).send("User ID is required");
+    }
+
+    // SQL query to delete user
+    var query = "DELETE FROM Studentinfo WHERE ID = @id";
+
+    sql.connect(dbConfig, function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Database connection error");
       }
+
+      var request = new sql.Request();
+      request.input("id", sql.VarChar, userId);
+
+      request.query(query, function (err, result) {
+        if (err) {
+          console.error(err);
+          return res.status(500).send("Query execution error");
+        }
+
+        res.send("User deleted successfully");
+      });
     });
   });
-});
 app.use("/", studentRouter);
 
 //POST API
@@ -204,6 +275,7 @@ app.post("/api/user", function (req, res) {
     });
   });
 });
+
 
 // // DELETE API
 //  app.delete("/api/user /:id", function(req , res){

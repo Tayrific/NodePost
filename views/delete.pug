@@ -1,12 +1,14 @@
 extends layout
 
 block content
-    h1= title
-    if user
-        p Are you sure you want to delete #{user.Name}?
-        form(action="/api/user/" + user.ID method="post")
-            input(type="hidden" name="_method" value="delete")
-            buttons
-                input(type="submit" value="Delete")
-    else
-        p User not found
+    .box
+        h1= title
+        if user
+            p Are you sure you want to delete #{user.Name}?
+            form(action=`/user/delete/${user.ID}?_method=DELETE` method="POST")
+                input(type="hidden" name="_method" value="DELETE")
+                .deleteButton
+                    buttons 
+                        input(type="submit" value="Delete")
+        else
+            p User not found

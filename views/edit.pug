@@ -1,14 +1,19 @@
 extends layout
 
 block content
-    h1= title
-    if user
-        form(action="/api/user/" + user.ID method="post")
-            input(type="hidden" name="_method" value="put")
-            p
-                input(type="text" name="name" value=user.Name required)
-                input(type="text" name="age" value=user.Age required)
-            buttons
-                input(type="submit" value="Update")
-    else
-        p User not found
+    .box
+        h1= title
+        if user
+            form(action=`/user/edit/${user.ID}?_method=PUT` method="POST")
+                input(type="hidden" name="_method" value="PUT")
+                .form-group
+                    label(for="name") Name:
+                    input(type="text" id="name" name="name" value=user.Name required)
+                .form-group
+                    label(for="age") Age:
+                    input(type="text" id="age" name="age" value=user.Age required)
+
+                .modifyButtons
+                    input(type="submit" value="Update")
+        else
+            p User not found
