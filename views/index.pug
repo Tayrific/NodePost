@@ -1,0 +1,24 @@
+extends layout 
+block content 
+
+    <form action="/user/:d" method="get">
+        p
+            select(name='dropDown' id='')
+                each item in items
+                    option(value=item.id)= item.id + ' ' + item.name
+
+            buttons
+                input(type='submit' value='Enter') 
+
+    hr
+
+    form(action="/api/user" method="post")
+        p
+            input(type='text' name='name' placeholder='Name')
+            input(type='text' name='age' placeholder='Age')
+
+            buttons
+                input(type='submit' value='Add')
+
+    hr
+    
