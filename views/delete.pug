@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    h1= title
+    if user
+        p Are you sure you want to delete #{user.Name}?
+        form(action="/api/user/" + user.ID method="post")
+            input(type="hidden" name="_method" value="delete")
+            buttons
+                input(type="submit" value="Delete")
+    else
+        p User not found

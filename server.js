@@ -105,86 +105,105 @@ studentRouter.route("/").get((req, res) => {
     });
   });
 });
-app.use("/", studentRouter);
 
-  studentRouter.route("/user/:id").get((req, res) => {
-    var userid = req.query["dropDown"];
-    if (!userid) {
-      return res.status(400).send("User ID is required");
-    }
-
-    var query = "SELECT * FROM Studentinfo WHERE ID = @id";
-
-    sql.connect(dbConfig, function (err) {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("Database connection error");
-      }
-
-      var request = new sql.Request();
-      request.input("id", sql.VarChar, userid[0]); // Using parameterized query
-
-      request.query(query, function (err, result) {
-        if (err) {
-          console.error(err);
-          return res.status(500).send("Query execution error");
-        }
-
-        var items = [];
-        if (result.recordset) {
-          for (var i = 0; i < result.recordset.length; i++) {
-            let item = {
-              id: result.recordset[i].ID,
-              name: result.recordset[i].Name,
-              age: result.recordset[i].Age,
-            };
-            console.log(
-              `id: ${item.id}  name: ${item.name}   age: ${item.age}`
-            );
-            items.push(item);
-          }
-        }
-
-        res.render("table", { title: "items", items: items });
-      });
-    });
-  });
-app.use("/user", studentRouter);
-
-//POST API to /user
-
-//PUT API
-studentRouter.route("/user/:id").put((req, res) => {
-  var userid = req.params.id;
-  if (!userid) {
-    return res.status(400).send("User ID is required");
-  }
-
-  var query = "UPDATE Studentinfo SET Name = @name, Age = @age WHERE ID = @id";
-
+studentRouter.route("/user/:id").get((req, res) => {
+  var userId = req.params.id;
+  var query = "SELECT * FROM Studentinfo WHERE ID = @id";
   sql.connect(dbConfig, function (err) {
     if (err) {
       console.error(err);
       return res.status(500).send("Database connection error");
     }
-
     var request = new sql.Request();
-    request.input("id", sql.VarChar, userid); // Using parameterized query
-    request.input("name", sql.VarChar, req.body.name);
-    request.input("age", sql.VarChar, req.body.age);
-
+    request.input("id", sql.VarChar, userId);
     request.query(query, function (err, result) {
       if (err) {
         console.error(err);
         return res.status(500).send("Query execution error");
       }
-
-      res.status(200).send("User updated successfully");
+      if (result.recordset.length > 0) {
+        res.render("view", {
+          title: "User Details",
+          user: result.recordset[0],
+        });
+      } else {
+        res.status(404).send("User not found");
+      }
     });
   });
 });
 
-app.use("/api", studentRouter);
+// Edit user page
+studentRouter.route("/user/edit/:id").get((req, res) => {
+  var userId = req.params.id;
+  var query = "SELECT * FROM Studentinfo WHERE ID = @id";
+  sql.connect(dbConfig, function (err) {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Database connection error");
+    }
+    var request = new sql.Request();
+    request.input("id", sql.VarChar, userId);
+    request.query(query, function (err, result) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Query execution error");
+      }
+      if (result.recordset.length > 0) {
+        res.render("edit", { title: "Edit User", user: result.recordset[0] });
+      } else {
+        res.status(404).send("User not found");
+      }
+    });
+  });
+});
+
+// Delete user page
+studentRouter.route("/user/delete/:id").get((req, res) => {
+  var userId = req.params.id;
+  var query = "SELECT * FROM Studentinfo WHERE ID = @id";
+  sql.connect(dbConfig, function (err) {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Database connection error");
+    }
+    var request = new sql.Request();
+    request.input("id", sql.VarChar, userId);
+    request.query(query, function (err, result) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Query execution error");
+      }
+      if (result.recordset.length > 0) {
+        res.render("delete", {
+          title: "Delete User",
+          user: result.recordset[0],
+        });
+      } else {
+        res.status(404).send("User not found");
+      }
+    });
+  });
+});
+app.use("/", studentRouter);
+
+//POST API
+app.post("/api/user", function (req, res) {
+  var query =
+    "INSERT INTO Studentinfo (Name, Age) VALUES ('" +
+    req.body.name +
+    "','" +
+    req.body.age +
+    "')";
+  sql.connect(dbConfig, function (err) {
+    if (err) console.log(err);
+    var request = new sql.Request();
+    request.query(query, function (err, recordset) {
+      if (err) console.log(err);
+      res.send("User added successfully");
+    });
+  });
+});
 
 // // DELETE API
 //  app.delete("/api/user /:id", function(req , res){

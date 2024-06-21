@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    h1= title
+    if user
+        form(action="/api/user/" + user.ID method="post")
+            input(type="hidden" name="_method" value="put")
+            p
+                input(type="text" name="name" value=user.Name required)
+                input(type="text" name="age" value=user.Age required)
+            buttons
+                input(type="submit" value="Update")
+    else
+        p User not found

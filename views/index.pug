@@ -1,24 +1,50 @@
-extends layout 
-block content 
+extends layout
 
-    <form action="/user/:d" method="get">
+block content
+    // Form for Enter, Edit, Delete
+    form(id="mainForm", method="get")
         p
-            select(name='dropDown' id='')
+            select(name='dropDown' id='dropdownSelect')
                 each item in items
                     option(value=item.id)= item.id + ' ' + item.name
+        buttons
+            button(type='button' onclick="setFormAction('enter')") Enter
 
-            buttons
-                input(type='submit' value='Enter') 
+            br
+            br
+            
+            button(type='button' onclick="setFormAction('edit')") Edit
+
+            br
+            br
+
+            button(type='button' onclick="setFormAction('delete')") Delete
 
     hr
 
+    // Form for adding a new user
     form(action="/api/user" method="post")
         p
-            input(type='text' name='name' placeholder='Name')
-            input(type='text' name='age' placeholder='Age')
+            input(type='text' name='name' placeholder='Name' required)
+            input(type='text' name='age' placeholder='Age' required)
+        buttons
+            input(type='submit' value='Add')
 
-            buttons
-                input(type='submit' value='Add')
-
-    hr
-    
+    script.
+        function setFormAction(action) {
+            var form = document.getElementById('mainForm');
+            var userId = document.getElementById('dropdownSelect').value;
+            switch(action) {
+                case 'enter':
+                    form.action = '/user/' + userId;
+                    form.method = 'get';
+                    form.submit();
+                    break;
+                case 'edit':
+                    window.location.href = '/user/edit/' + userId;
+                    break;
+                case 'delete':
+                    window.location.href = '/user/delete/' + userId;
+                    break;
+            }
+        }
